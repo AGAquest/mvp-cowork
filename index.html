@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoWork INACAP | Sistema de Reservas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <nav class="bg-blue-600 text-white p-4 shadow-md">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Feria CoWork Hub</h1>
+            <span class="text-sm bg-blue-700 px-3 py-1 rounded-full">MVP Demo</span>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-6 mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Panel de Reserva -->
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Reserva tu Espacio</h2>
+            
+            <form id="booking-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Proyecto / Emprendimiento</label>
+                    <input type="text" id="project-name" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Espacio</label>
+                    <select id="space-type" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="Mesa Compartida">Mesa Compartida</option>
+                        <option value="Sala de Reuniones">Sala de Reuniones (4 personas)</option>
+                        <option value="Stand Exhibición">Stand de Exhibición</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Reserva</label>
+                    <input type="date" id="booking-date" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                    Confirmar Reserva
+                </button>
+            </form>
+        </div>
+
+        <!-- Panel de Reservas Activas (Lectura) -->
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Espacios Asignados</h2>
+            
+            <div id="empty-state" class="text-center text-gray-400 py-10 hidden">
+                <p>No hay reservas activas en este momento.</p>
+            </div>
+
+            <ul id="bookings-list" class="space-y-3 flex-grow overflow-y-auto max-h-[400px]">
+                <!-- Las reservas se renderizan aquí -->
+            </ul>
+        </div>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
