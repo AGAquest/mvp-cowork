@@ -81,10 +81,3 @@ npm test               # requiere Node 20 o superior
 ```
 
 Cubren las fechas (zona horaria, fechas imposibles, días cerrados), la capacidad por bloque y por asistente, las superposiciones, las reglas por proyecto, la cancelación, los filtros, la migración desde la v1, los datos corruptos, la importación y el escapado del CSV.
-
-## Próximos pasos posibles
-
-- Backend (por ejemplo, Supabase o Express + SQLite) para compartir las reservas entre dispositivos.
-- Autenticación de organizadores y una vista de administración.
-- Envío del código de reserva por correo.
-- Edición de reservas y lista de espera cuando un bloque está lleno.
