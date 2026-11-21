@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema de reservas de espacios para la Feria CoWork Hub: mesas compartidas, salas de reuniones y stands.">
+  <meta property="og:title" content="Feria CoWork Hub · Sistema de reservas">
+  <meta property="og:description" content="Reserva mesas compartidas, salas de reuniones y stands con disponibilidad en tiempo real.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>Feria CoWork Hub | Sistema de Reservas</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231d4ed8'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>CW</text></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#booking-form">Saltar al formulario de reserva</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">CW</span>
+        <div>
+          <h1 class="brand__title">Feria CoWork Hub</h1>
+          <p class="brand__subtitle">Sistema de reservas de espacios</p>
+        </div>
+      </div>
+      <div class="topbar__actions">
+        <button type="button" class="btn btn--ghost" id="export-csv">Exportar CSV</button>
+        <button type="button" class="btn btn--ghost" id="export-json">Respaldo JSON</button>
+        <label class="btn btn--ghost" for="import-json">Importar
+          <input type="file" id="import-json" accept="application/json,.json" class="visually-hidden">
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="stats" aria-label="Resumen">
+      <div class="stat"><span class="stat__value" id="stat-upcoming">0</span><span class="stat__label">Reservas próximas</span></div>
+      <div class="stat"><span class="stat__value" id="stat-projects">0</span><span class="stat__label">Proyectos participando</span></div>
+      <div class="stat"><span class="stat__value" id="stat-occupancy">0%</span><span class="stat__label">Ocupación hoy</span></div>
+      <div class="stat"><span class="stat__value" id="stat-cancelled">0</span><span class="stat__label">Canceladas</span></div>
+    </section>
+
+    <div class="layout">
+      <!-- Formulario -->
+      <section class="card" aria-labelledby="form-title">
+        <h2 class="card__title" id="form-title">Reserva tu espacio</h2>
+
+        <form id="booking-form" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="project-name">Proyecto / emprendimiento</label>
+              <input type="text" id="project-name" name="projectName" autocomplete="organization" maxlength="80" required aria-describedby="err-projectName">
+              <p class="field__error" id="err-projectName"></p>
+            </div>
+            <div class="field">
+              <label for="contact-name">Responsable</label>
+              <input type="text" id="contact-name" name="contactName" autocomplete="name" maxlength="60" required aria-describedby="err-contactName">
+              <p class="field__error" id="err-contactName"></p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Correo de contacto</label>
+            <input type="email" id="email" name="email" autocomplete="email" inputmode="email" required aria-describedby="err-email">
+            <p class="field__error" id="err-email"></p>
+          </div>
+
+          <fieldset class="field">
+            <legend>Tipo de espacio</legend>
+            <div class="space-options" id="space-options"><!-- generado desde config.js --></div>
+            <p class="field__error" id="err-spaceId"></p>
+          </fieldset>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="booking-date">Fecha</label>
+              <input type="date" id="booking-date" name="date" required aria-describedby="date-hint err-date">
+              <p class="field__hint" id="date-hint"></p>
+              <p class="field__error" id="err-date"></p>
+            </div>
+            <div class="field">
+              <label for="attendees">Asistentes</label>
+              <input type="number" id="attendees" name="attendees" min="1" max="4" value="1" required aria-describedby="attendees-hint err-attendees">
+              <p class="field__hint" id="attendees-hint"></p>
+              <p class="field__error" id="err-attendees"></p>
+            </div>
+          </div>
+
+          <fieldset class="field">
+            <legend>Bloque horario</legend>
+            <div class="slot-options" id="slot-options"><!-- generado desde config.js --></div>
+            <p class="field__error" id="err-slot"></p>
+          </fieldset>
+
+          <div class="field">
+            <label for="notes">Notas <span class="optional">(opcional)</span></label>
+            <textarea id="notes" name="notes" rows="2" maxlength="280" aria-describedby="notes-count err-notes" placeholder="Ej: necesito alargador, llegamos 10:30…"></textarea>
+            <p class="field__hint" id="notes-count">0 / 280</p>
+            <p class="field__error" id="err-notes"></p>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--block" id="submit-btn">Confirmar reserva</button>
+        </form>
+      </section>
+
+      <!-- Disponibilidad -->
+      <section class="card" aria-labelledby="avail-title">
+        <h2 class="card__title" id="avail-title">Disponibilidad</h2>
+        <p class="muted" id="avail-date">Selecciona una fecha</p>
+        <div id="availability" class="availability" aria-live="polite"></div>
+        <p class="legend">
+          <span class="dot dot--ok"></span> Disponible
+          <span class="dot dot--low"></span> Pocos cupos
+          <span class="dot dot--full"></span> Completo
+        </p>
+      </section>
+    </div>
+
+    <!-- Listado -->
+    <section class="card" aria-labelledby="list-title">
+      <div class="list-header">
+        <h2 class="card__title" id="list-title">Espacios asignados</h2>
+        <div class="list-tools">
+          <input type="search" id="search" placeholder="Buscar proyecto, responsable o código" aria-label="Buscar reservas">
+          <select id="filter-space" aria-label="Filtrar por espacio"><option value="">Todos los espacios</option></select>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Estado de las reservas">
+        <button type="button" role="tab" class="tab" data-tab="upcoming" aria-selected="true">Próximas <span class="tab__count" data-count="upcoming"></span></button>
+        <button type="button" role="tab" class="tab" data-tab="past" aria-selected="false">Pasadas <span class="tab__count" data-count="past"></span></button>
+        <button type="button" role="tab" class="tab" data-tab="cancelled" aria-selected="false">Canceladas <span class="tab__count" data-count="cancelled"></span></button>
+      </div>
+
+      <ul id="bookings-list" class="bookings" role="tabpanel" aria-labelledby="list-title"></ul>
+      <div id="empty-state" class="empty" hidden>
+        <p id="empty-text">No hay reservas activas en este momento.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    <p>MVP de portafolio · Datos guardados localmente en tu navegador.</p>
+  </footer>
+
+  <!-- Diálogo de confirmación genérico -->
+  <dialog id="dialog" class="dialog" aria-labelledby="dialog-title">
+    <form method="dialog">
+      <h3 id="dialog-title"></h3>
+      <div id="dialog-body"></div>
+      <div class="dialog__actions">
+        <button value="cancel" class="btn btn--ghost" id="dialog-cancel">Volver</button>
+        <button value="alt" class="btn btn--danger-outline" id="dialog-alt" hidden></button>
+        <button value="confirm" class="btn btn--primary" id="dialog-confirm">Aceptar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
